@@ -1,0 +1,6 @@
+black
+mypy
+pyright
+isort
+pylint
+pyflakes

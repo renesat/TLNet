@@ -1,0 +1,26 @@
+[tool.pyright]
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint]
+
+  [tool.pylint.messages_control]
+  disable = ["C0330", "C0326"]
+
+  [tool.pylint.basic]
+  good-names = [
+    "i",
+    "j",
+    "k",
+    "ex",
+    "Run",
+    "df",
+    "_",
+  ]
+
+  [tool.pylint.format]
+  max-line-length = 88
+
+[tool.mypy]
+ignore_missing_imports = true
