@@ -1,6 +1,8 @@
 { pkgs ? import <nixpkgs> { } }:
 
-pkgs.mkShell {
+let
+  libs = pkgs.lib.makeLibraryPath (with pkgs; [ stdenv.cc.cc.lib glib libGL ]);
+in pkgs.mkShell {
   name = "TLNet";
 
   venvDir = "./.venv";
@@ -13,4 +15,7 @@ pkgs.mkShell {
     python39Packages.venvShellHook
   ];
 
+  postShellHook = ''
+    export LD_LIBRARY_PATH=${libs}:$LD_LIBRARY_PATH
+  '';
 }
