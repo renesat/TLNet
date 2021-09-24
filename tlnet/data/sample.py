@@ -62,8 +62,8 @@ class SampleDataset(Dataset):
         if self.cls[idx] == 0:
             res = {
                 "image": img,
-                "class": 0,
-                "box": torch.Tensor((0, 0, 0, 0)),
+                "class": 0.0,
+                "box": torch.Tensor((0, 0, 0, 0)).float(),
             }
         else:
             img_rel_path = str(Path(img_path.parent.name) / img_path.name)
@@ -72,8 +72,8 @@ class SampleDataset(Dataset):
             ]
             res = {
                 "image": img,
-                "class": 1,
-                "box": torch.Tensor(tuple(box)),
+                "class": 1.0,
+                "box": torch.Tensor(tuple(box)).float(),
             }
         return res
 
