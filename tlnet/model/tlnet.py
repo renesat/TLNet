@@ -2,6 +2,7 @@ import pytorch_lightning as pl
 import torch
 import torch.nn.functional as F
 from torch import nn
+import numpy as np
 
 
 class TLNet(pl.LightningModule):
@@ -27,10 +28,9 @@ class TLNet(pl.LightningModule):
 
     def forward(self, x):
         x = self.conv(x)
-        print(x.shape)
         x = torch.flatten(x, start_dim=1)
         x = self.linear(x)
-        pred = F.sigmoid(x[:, 0])
+        pred = torch.sigmoid(x[:, 0])
         box = x[:, 1:]
         return pred, box
 
@@ -41,15 +41,19 @@ class TLNet(pl.LightningModule):
 
         cls_pred, box_pred = self.forward(img)
 
-        loss = F.binary_cross_entropy(
+        bse_loss = F.binary_cross_entropy(
             cls_pred.float(),
             cls.float(),
         )
-        for i, p in enumerate(cls_pred):
+        reg_loss = 0
+        for i, p in enumerate(cls):
             if p > 0.5:
-                loss += 2 * ((box_pred[i] - box[i]) ** 2).sum().sqrt()
+                reg_loss += 2 * ((box_pred[i] - box[i]) ** 2).sum().sqrt()
+        loss = reg_loss + bse_loss
 
-        self.log("train_loss", loss)
+        self.log("train/loss", loss)
+        self.log("train/reg_loss", reg_loss)
+        self.log("train/bse_loss", bse_loss)
 
         return loss
 
@@ -60,15 +64,32 @@ class TLNet(pl.LightningModule):
 
         cls_pred, box_pred = self.forward(img)
 
-        loss = F.binary_cross_entropy(
-            cls_pred,
-            cls,
+        bse_loss = F.binary_cross_entropy(
+            cls_pred.float(),
+            cls.float(),
         )
-        if cls_pred > 0.5:
-            loss += 2 * ((box_pred - box) ** 2).sqrt()
+        reg_loss = 0
+        for i, p in enumerate(cls):
+            if p > 0.5:
+                reg_loss += 2 * ((box_pred[i] - box[i]) ** 2).sum().sqrt()
+        loss = reg_loss + bse_loss
 
-        self.log("val_loss", loss)
-        return loss
+        accuracy = ((cls_pred > 0.5) == (cls > 0.5))
+
+        self.log("val/loss", loss)
+        self.log("val/reg_loss", reg_loss)
+        self.log("val/bse_loss", bse_loss)
+
+        return {
+                "loss":loss,
+                "accuracy": accuracy,
+                }
+
+    def validation_epoch_end(self, outputs):
+       accuracy = []
+       for out in outputs:
+           accuracy += list(out["accuracy"].detach().cpu().numpy())
+       self.log("val/accuracy", np.mean(accuracy))
 
     def configure_optimizers(self):
         optimizer = torch.optim.Adam(self.parameters(), lr=1e-3)
