@@ -14,6 +14,11 @@
 pip install -r requirements.txt
 #+end_src
 
+* Данные
+
+Используются данные из набора LISA Traffic Light Dataset.
+
+
 * Тестирования
 
 Пример тестирования модели представлен в ноутбуке
