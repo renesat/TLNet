@@ -1,3 +1,21 @@
 #+TITLE:  TLNet
 
-Отчёт по заданию лежит в файле *reports/report.md*.
+
+* Описание
+
+Реализация (примерная, в связи неточностью описания алгоритма) статьи
+[[https://doi.org/10.1109/MCE.2020.2969156][Vitas, Dijana, Martina Tomic, и Matko Burul. «Traffic Light Detection in Autonomous Driving Systems»]].
+
+* Структура проекта
+- [[reports/report.md]]: отчёт по заданию;
+- [[tlnet/]]: python пакет с реализацией задачи;
+  + [[tlnet/data]]: подпакет с функциями для работы с данными;
+  + [[tlnet/model/roi.py]]: реализация поиска ROI;
+  + [[tlnet/model/tlnet.py]]: реализация нейронной сети;
+- [[notebooks/]]: используемые jupyter ноутбуки;
+  + [[notebooks/Generate Dataset.ipynb]]: ноутбук использовался для генерации примеров для обучения сети.
+  + [[notebooks/Test model.ipynb]]: ноутбук использовался для тестирования модели.
+  + [[notebooks/Train.ipynb]]: ноутбук использовался для обучения модели.
+- [[requirements.txt]]: необходимые зависимости;
+- [[requirements_dev.txt]]: зависимости для разработки;
+- [[shell.nix]]: файл для работы с пакетным менеджером [[https://nixos.org][Nix]].
