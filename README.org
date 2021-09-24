@@ -3,12 +3,12 @@
 
 * Описание
 
-Реализация (примерная, в связи неточностью описания алгоритма) статьи
+Реализация (примерная, в связи с неточностями описания алгоритма статьи)
 [[https://doi.org/10.1109/MCE.2020.2969156][Vitas, Dijana, Martina Tomic, и Matko Burul. «Traffic Light Detection in Autonomous Driving Systems»]].
 
 * Установка зависимостей
 
-Для уставновки зависимостей необходимых для запуска модели необходимо воспользоваться коммандой:
+Для уставновки зависимостей, необходимых для запуска модели, следует воспользоваться командой:
 
 #+begin_src shell
 pip install -r requirements.txt
@@ -18,13 +18,13 @@ pip install -r requirements.txt
 
 Используются данные из набора [[https://www.kaggle.com/mbornoe/lisa-traffic-light-dataset][LISA Traffic Light Dataset]].
 
-* Тестирования
+* Тестирование
 
 Пример тестирования модели представлен в ноутбуке
 [[notebooks/Test model.ipynb]].
 Для запуска необходимы веса модели ([[https://drive.google.com/file/d/1fPNHMPgYdaQIZrh0IOkEqk2Kxy4-tAaM/view?usp=sharing][link]]).
 На вход модели необходимо подавать 3-х канальное изображения с разрешением
-128x128 отнормированное по среднему и деперсии из ImageNet ((0.485, 0.456, 0.406) и (0.229, 0.224, 0.225) сответственно).
+128x128, отнормированное по среднему и деперсии из ImageNet ((0.485, 0.456, 0.406) и (0.229, 0.224, 0.225) сответственно).
 
 * Структура проекта
 - [[reports/report.md]]: отчёт по заданию;
@@ -33,9 +33,9 @@ pip install -r requirements.txt
   + [[tlnet/model/roi.py]]: реализация поиска ROI;
   + [[tlnet/model/tlnet.py]]: реализация нейронной сети;
 - [[notebooks/]]: используемые jupyter ноутбуки;
-  + [[notebooks/Generate Dataset.ipynb]]: ноутбук использовался для генерации примеров для обучения сети.
-  + [[notebooks/Test model.ipynb]]: ноутбук использовался для тестирования модели.
-  + [[notebooks/Train.ipynb]]: ноутбук использовался для обучения модели.
+  + [[notebooks/Generate Dataset.ipynb]]: ноутбук, который использовался для генерации примеров для обучения сети.
+  + [[notebooks/Test model.ipynb]]: ноутбук, который использовался для тестирования модели.
+  + [[notebooks/Train.ipynb]]: ноутбук, который использовался для обучения модели.
 - [[requirements.txt]]: необходимые зависимости;
 - [[requirements_dev.txt]]: зависимости для разработки;
 - [[shell.nix]]: файл для работы с пакетным менеджером [[https://nixos.org][Nix]].
