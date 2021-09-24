@@ -16,8 +16,7 @@ pip install -r requirements.txt
 
 * Данные
 
-Используются данные из набора LISA Traffic Light Dataset.
-
+Используются данные из набора [[https://www.kaggle.com/mbornoe/lisa-traffic-light-dataset][LISA Traffic Light Dataset]].
 
 * Тестирования
 
