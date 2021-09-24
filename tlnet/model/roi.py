@@ -12,8 +12,8 @@ DEFAULT_WINDOWS_STEP = (32, 32)
 
 
 class ROISelector:
+    """Generate region of interest by image with RGB and HSV colorspaces."""
 
-    # TODO
     def __init__(
         self,
         train: bool = False,
@@ -21,17 +21,64 @@ class ROISelector:
         hsv_thresholds: Tuple[float, float] = DEFAULT_HSV_THRESHOLDS,
         bright_threshold: float = DEFAULT_BRIGHT_THRESHOLD,
     ):
+        """Create ROI selector.
+
+        Parameters
+        ----------
+        train
+            Using global bright mask if True.
+        rgb_thresholds
+            Thresholds for R, G and B layers in RGB image.
+        hsv_thresholds
+            Thresholds for S and V layers in HSV image.
+        bright_thresholds
+            Threshold for brightnes layer.
+        """
+
         self.train = train
         self.rgb_thresholds = rgb_thresholds
         self.hsv_thresholds = hsv_thresholds
         self.bright_threshold = bright_threshold
 
-    def _get_mask(self, region: torch.Tensor, threshold: float):
+    @staticmethod
+    def _get_mask(region: torch.Tensor, threshold: float) -> torch.Tensor:
+        """Generate mask for image region. Based on fixed threshold and
+        mean value in region.
+
+        Parameters
+        ----------
+        region
+            Part of image with shape B x H x W where B is batch size.
+        threshold
+            Fixed threshold for region.
+
+        Returns
+        -------
+        mask
+            Binary mask with shape B x H x W.
+        """
         mean_value = region.mean(dim=(1, 2))
         mask = region > (mean_value + threshold).unsqueeze(1).unsqueeze(1)
         return mask
 
-    def _global_mask(self, values: torch.Tensor, thresholds: Tuple[float, ...]):
+    def _global_mask(
+        self, values: torch.Tensor, thresholds: Tuple[float, ...]
+    ) -> torch.Tensor:
+        """Create mask for all image threshold.
+
+        Parameters
+        ----------
+        values
+            Tensor with shape B x C x H x W where B is batch size and
+            C is number of chanels.
+        thresholds
+            thresholds for all chanels.
+
+        Returns
+        -------
+        masks
+            Binary mask with shape B x H x W.
+        """
         masks = torch.ones(
             (
                 values.shape[0],
@@ -55,7 +102,27 @@ class ROISelector:
         thresholds: Tuple[float, ...],
         window_size: Tuple[int, int] = DEFAULT_WINDOWS_SIZE,
         window_step: Tuple[int, int] = DEFAULT_WINDOWS_STEP,
-    ):
+    ) -> torch.Tensor:
+        """Create mask using sliding window.
+
+        Parameters
+        ----------
+        values
+            Tensor with shape B x C x H x W where B is batch size and
+            C is number of chanels.
+        thresholds
+            Thresholds for all chanels.
+        window_size
+            Size of sliding window ( (64, 64) by default )
+        window_step
+            Step of sliding window by x and y ( (32, 32) by default )
+
+
+        Returns
+        -------
+        masks
+            Binary masks with shape B x C x H x W.
+        """
         masks = torch.zeros(
             (
                 values.shape[0],
@@ -87,7 +154,20 @@ class ROISelector:
 
         return masks.int()
 
-    def _get_roi(self, mask: torch.Tensor):
+    @staticmethod
+    def _get_roi(mask: torch.Tensor) -> torch.Tensor:
+        """Find blobs using binary mask.
+
+        Parameters
+        ----------
+        mask
+            Tensor binary mask with shape B x H x W where B is batch size.
+
+        Returns
+        -------
+        centers
+            Tensor with centers of ROIs. Shape B x 2.
+        """
         cv_mask = np.array(mask * 255).astype(np.uint8)
         # apply morphology open then close
         kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
@@ -121,7 +201,7 @@ class ROISelector:
         hsv_img: torch.Tensor,
         window_size: Tuple[int, int] = DEFAULT_WINDOWS_SIZE,
         window_step: Tuple[int, int] = DEFAULT_WINDOWS_STEP,
-    ):
+    ) -> Tuple[torch.Tensor, torch.Tensor]:
         mask = torch.zeros(
             (
                 rgb_img.shape[0],
